@@ -3,6 +3,7 @@ import { bot } from "..";
 import { sendMessageWithButtonsTelegram } from "../lib";
 import {
    SCENE_CHANGE_CONFIG,
+   SCENE_CHANGE_CONFIG_NUM_HEROES,
    SCENE_CHANGE_CONFIG_PERCENTAGE,
    SCENE_CHANGE_CONFIG_SERVER,
 } from "./list";
@@ -64,7 +65,7 @@ export const sceneConfigServer: any = new Scenes.WizardScene(
    }
 );
 
-const percentage = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+const percentage = [2, 5, 8, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 export const sceneConfigPercentage: any = new Scenes.WizardScene(
    SCENE_CHANGE_CONFIG_PERCENTAGE,
    async (ctx) => nextStep(ctx),
@@ -102,6 +103,40 @@ export const sceneConfigPercentage: any = new Scenes.WizardScene(
       }
    }
 );
+const heroes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+export const sceneConfigNumHeroes: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_NUM_HEROES,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = parseInt(getValue(ctx));
+         if (mode) {
+            if (!percentage.includes(mode)) {
+               await ctx.replyWithHTML("Percentage not found: " + mode);
+               return ctx.scene.leave();
+            }
+
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(bot.getIdentify(), "NUM_HERO_WORK", mode);
+            return ctx.scene.leave();
+         }
+
+         await sendMessageWithButtonsTelegram(
+            ctx,
+            "Select a qty",
+            heroes.map((p) => Markup.button.callback(`${p}`, p.toString()))
+         );
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
 
 export const sceneConfig: any = new Scenes.WizardScene(
    SCENE_CHANGE_CONFIG,
@@ -123,6 +158,9 @@ export const sceneConfig: any = new Scenes.WizardScene(
             if (mode == "MIN_HERO_ENERGY_PERCENTAGE") {
                await ctx.scene.enter(SCENE_CHANGE_CONFIG_PERCENTAGE);
             }
+            if (mode == "NUM_HERO_WORK") {
+               await ctx.scene.enter(SCENE_CHANGE_CONFIG_NUM_HEROES);
+            }
 
             return;
          }
@@ -136,6 +174,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                   "MIN_HERO_ENERGY_PERCENTAGE",
                   "MIN_HERO_ENERGY_PERCENTAGE"
                ),
+               Markup.button.callback("NUM_HERO_WORK", "NUM_HERO_WORK"),
             ],
             1
          );
