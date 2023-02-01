@@ -58,7 +58,7 @@ import {
 } from "./parsers";
 import { ILoginParams } from "./parsers/login";
 
-const DEFAULT_TIMEOUT = 1000 * 60 * 5;
+const DEFAULT_TIMEOUT = 1000 * 60 * 2;
 const HISTORY_SIZE = 5;
 const ADVENTURE_ENABLED = true;
 type ExplosionByHero = Map<
