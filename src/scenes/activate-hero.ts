@@ -1,4 +1,4 @@
-import { Markup, Scenes } from "telegraf";
+import { Scenes } from "telegraf";
 import { bot } from "..";
 import { sendMessageWithButtonsTelegram } from "../lib";
 import { SCENE_ACTIVATE_HERO } from "./list";
@@ -85,9 +85,8 @@ export const sceneActivateHero: any = new Scenes.WizardScene(
          await sendMessageWithButtonsTelegram(
             ctx,
             "Select a hero",
-            heroes.map((hero) =>
-               Markup.button.callback(hero.id.toString(), hero.id.toString())
-            )
+            bot.telegram.createButtonsHero(heroes, []),
+            2
          );
       } catch (e: any) {
          ctx.scene.leave();

@@ -1479,10 +1479,13 @@ export class TreasureMapBot {
       const config = require("./ecosystem.config");
 
       const account = config.apps.find(
-         (acc: any) =>
-            acc.name == accountName || acc.env?.IDENTIFY == accountName
+         (acc: any) => acc.env?.IDENTIFY == accountName
       );
-      if (!account) return;
+      if (!account) {
+         return this.telegram.sendMessageChat(
+            `you need to put an "IDENTIFY" in the configuration file`
+         );
+      }
       account.env[name] = value;
 
       await this.pm2SaveFile(config);

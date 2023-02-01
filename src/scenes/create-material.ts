@@ -124,7 +124,7 @@ export const sceneCreateMaterial: any = new Scenes.WizardScene(
                   Markup.button.callback("cancel", "cancel"),
                   Markup.button.callback("submit", "submit"),
                ],
-               { columns: 3 }
+               { columns: 2 }
             );
             bot.telegram.telegraf?.telegram.editMessageText(
                materialButton.chat.id,
@@ -161,7 +161,7 @@ export const sceneCreateMaterial: any = new Scenes.WizardScene(
                      Markup.button.callback("cancel", "cancel"),
                      Markup.button.callback("submit", "submit"),
                   ],
-                  { columns: 3 }
+                  { columns: 2 }
                )
             );
             ctx.wizard.state.material = await ctx.replyWithHTML(
