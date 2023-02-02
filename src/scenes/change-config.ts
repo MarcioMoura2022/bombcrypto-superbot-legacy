@@ -7,6 +7,7 @@ import {
    SCENE_CHANGE_CONFIG_NUM_HEROES,
    SCENE_CHANGE_CONFIG_PERCENTAGE,
    SCENE_CHANGE_CONFIG_SERVER,
+   SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
 } from "./list";
 
 const nextStep = (ctx: any, step?: number) => {
@@ -32,6 +33,30 @@ const getValue = (ctx: any) => {
    return "";
 };
 
+export const sceneConfigTelegramChatId: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = getValue(ctx);
+         if (mode) {
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(bot.getIdentify(), "TELEGRAM_CHAT_ID", mode);
+            return ctx.scene.leave();
+         }
+
+         await ctx.replyWithHTML(`Enter the TELEGRAM_CHAT_ID`);
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
 export const sceneConfigServer: any = new Scenes.WizardScene(
    SCENE_CHANGE_CONFIG_SERVER,
    async (ctx) => nextStep(ctx),
@@ -234,17 +259,16 @@ export const sceneConfig: any = new Scenes.WizardScene(
 
          const mode = getValue(ctx);
          if (mode) {
-            if (mode == "SERVER") {
-               await ctx.scene.enter(SCENE_CHANGE_CONFIG_SERVER);
-            }
-            if (mode == "MIN_HERO_ENERGY_PERCENTAGE") {
-               await ctx.scene.enter(SCENE_CHANGE_CONFIG_PERCENTAGE);
-            }
-            if (mode == "NUM_HERO_WORK") {
-               await ctx.scene.enter(SCENE_CHANGE_CONFIG_NUM_HEROES);
-            }
-            if (mode == "HOUSE_HEROES") {
-               await ctx.scene.enter(SCENE_CHANGE_CONFIG_HOUSE_HEROES);
+            const scenes: any = {
+               SERVER: SCENE_CHANGE_CONFIG_SERVER,
+               MIN_HERO_ENERGY_PERCENTAGE: SCENE_CHANGE_CONFIG_PERCENTAGE,
+               NUM_HERO_WORK: SCENE_CHANGE_CONFIG_NUM_HEROES,
+               HOUSE_HEROES: SCENE_CHANGE_CONFIG_HOUSE_HEROES,
+               TELEGRAM_CHAT_ID: SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
+            };
+
+            if (mode in scenes) {
+               await ctx.scene.enter(scenes[mode]);
             }
 
             return;
@@ -261,6 +285,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                ),
                Markup.button.callback("NUM_HERO_WORK", "NUM_HERO_WORK"),
                Markup.button.callback("HOUSE_HEROES", "HOUSE_HEROES"),
+               Markup.button.callback("TELEGRAM_CHAT_ID", "TELEGRAM_CHAT_ID"),
             ],
             1
          );

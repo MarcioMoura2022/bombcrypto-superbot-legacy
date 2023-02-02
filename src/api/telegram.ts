@@ -21,6 +21,7 @@ import {
    sceneConfigNumHeroes,
    sceneConfigPercentage,
    sceneConfigServer,
+   sceneConfigTelegramChatId,
 } from "../scenes/change-config";
 import { sceneCreateMaterial } from "../scenes/create-material";
 import { sceneDeactivateHero } from "../scenes/deactivate-hero";
@@ -71,6 +72,7 @@ export class Telegram {
             sceneRemoveAccount,
             sceneConfigHouseHeroes,
             sceneConfigNumHeroes,
+            sceneConfigTelegramChatId,
          ]);
          this.telegraf.use(session());
          this.telegraf.use(stage.middleware());

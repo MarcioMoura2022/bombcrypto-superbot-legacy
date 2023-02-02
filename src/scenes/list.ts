@@ -9,5 +9,7 @@ export const SCENE_CHANGE_CONFIG_SERVER = "change-config-server";
 export const SCENE_CHANGE_CONFIG_PERCENTAGE = "change-config-percentage";
 export const SCENE_CHANGE_CONFIG_NUM_HEROES = "change-config-num-heroes";
 export const SCENE_CHANGE_CONFIG_HOUSE_HEROES = "change-config-house-heroes";
+export const SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID =
+   "change-config-telegram-chat-id";
 export const SCENE_ADD_ACCOUNT = "add-account";
 export const SCENE_REMOVE_ACCOUNT = "remove-account";
