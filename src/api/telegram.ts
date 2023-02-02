@@ -20,6 +20,7 @@ import {
    sceneConfigHouseHeroes,
    sceneConfigNumHeroes,
    sceneConfigPercentage,
+   sceneConfigResetShieldAuto,
    sceneConfigServer,
    sceneConfigTelegramChatId,
 } from "../scenes/change-config";
@@ -73,6 +74,7 @@ export class Telegram {
             sceneConfigHouseHeroes,
             sceneConfigNumHeroes,
             sceneConfigTelegramChatId,
+            sceneConfigResetShieldAuto,
          ]);
          this.telegraf.use(session());
          this.telegraf.use(stage.middleware());

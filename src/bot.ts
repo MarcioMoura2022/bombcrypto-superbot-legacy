@@ -1486,7 +1486,11 @@ export class TreasureMapBot {
             `you need to put an "IDENTIFY" in the configuration file`
          );
       }
-      account.env[name] = value;
+      if (value === null) {
+         delete account.env[name];
+      } else {
+         account.env[name] = value;
+      }
 
       await this.pm2SaveFile(config);
       pm2.connect(() => {

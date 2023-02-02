@@ -6,6 +6,7 @@ import {
    SCENE_CHANGE_CONFIG_HOUSE_HEROES,
    SCENE_CHANGE_CONFIG_NUM_HEROES,
    SCENE_CHANGE_CONFIG_PERCENTAGE,
+   SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
    SCENE_CHANGE_CONFIG_SERVER,
    SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
 } from "./list";
@@ -48,6 +49,54 @@ export const sceneConfigTelegramChatId: any = new Scenes.WizardScene(
          }
 
          await ctx.replyWithHTML(`Enter the TELEGRAM_CHAT_ID`);
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
+export const sceneConfigResetShieldAuto: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = getValue(ctx);
+         if (mode.length) {
+            if (mode !== "0" && mode !== "1") {
+               await ctx.replyWithHTML(`Value not allowed: ${mode}`);
+               return ctx.scene.leave();
+            }
+
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(
+               bot.getIdentify(),
+               "RESET_SHIELD_AUTO",
+               mode === "0" ? null : 1
+            );
+            return ctx.scene.leave();
+         }
+
+         if (bot.loginParams.type == "user") {
+            await ctx.replyWithHTML(
+               `Functionality only allowed when logging in with the wallet`
+            );
+            return ctx.scene.leave();
+         }
+
+         if (bot.loginParams.rede != "POLYGON") {
+            await ctx.replyWithHTML(`Functionality only allowed for POLYGON`);
+            return ctx.scene.leave();
+         }
+
+         await sendMessageWithButtonsTelegram(ctx, "Reset auto shield", [
+            Markup.button.callback("Enable", "1"),
+            Markup.button.callback("Disable", "0"),
+         ]);
       } catch (e: any) {
          if (e.message == "exit") {
             throw e;
@@ -265,6 +314,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                NUM_HERO_WORK: SCENE_CHANGE_CONFIG_NUM_HEROES,
                HOUSE_HEROES: SCENE_CHANGE_CONFIG_HOUSE_HEROES,
                TELEGRAM_CHAT_ID: SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
+               RESET_SHIELD_AUTO: SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
             };
 
             if (mode in scenes) {
@@ -286,6 +336,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                Markup.button.callback("NUM_HERO_WORK", "NUM_HERO_WORK"),
                Markup.button.callback("HOUSE_HEROES", "HOUSE_HEROES"),
                Markup.button.callback("TELEGRAM_CHAT_ID", "TELEGRAM_CHAT_ID"),
+               Markup.button.callback("RESET_SHIELD_AUTO", "RESET_SHIELD_AUTO"),
             ],
             1
          );
