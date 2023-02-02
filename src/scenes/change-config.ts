@@ -3,6 +3,7 @@ import { bot } from "..";
 import { sendMessageWithButtonsTelegram, sortByRarityDesc } from "../lib";
 import {
    SCENE_CHANGE_CONFIG,
+   SCENE_CHANGE_CONFIG_ALERT_MATERIAL,
    SCENE_CHANGE_CONFIG_ALERT_SHIELD,
    SCENE_CHANGE_CONFIG_HOUSE_HEROES,
    SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
@@ -122,6 +123,32 @@ export const sceneConfigTelegramChatId: any = new Scenes.WizardScene(
          }
 
          await ctx.replyWithHTML(`Enter the TELEGRAM_CHAT_ID`);
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
+export const sceneConfigAlertMaterial: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_ALERT_MATERIAL,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = getValue(ctx);
+         if (mode) {
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(bot.getIdentify(), "ALERT_MATERIAL", mode);
+            return ctx.scene.leave();
+         }
+
+         await ctx.replyWithHTML(
+            `Inform how much material you want to receive notification with`
+         );
       } catch (e: any) {
          if (e.message == "exit") {
             throw e;
@@ -389,7 +416,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                TELEGRAM_CHAT_ID: SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
                RESET_SHIELD_AUTO: SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
                MAX_GAS_REPAIR_SHIELD: SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
-               ALERT_SHIELD: SCENE_CHANGE_CONFIG_ALERT_SHIELD,
+               ALERT_MATERIAL: SCENE_CHANGE_CONFIG_ALERT_MATERIAL,
             };
 
             if (mode in scenes) {
@@ -417,6 +444,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                   "MAX_GAS_REPAIR_SHIELD"
                ),
                Markup.button.callback("ALERT_SHIELD", "ALERT_SHIELD"),
+               Markup.button.callback("ALERT_MATERIAL", "ALERT_MATERIAL"),
             ],
             1
          );

@@ -10,6 +10,8 @@ export const SCENE_CHANGE_CONFIG_PERCENTAGE = "change-config-percentage";
 export const SCENE_CHANGE_CONFIG_NUM_HEROES = "change-config-num-heroes";
 export const SCENE_CHANGE_CONFIG_HOUSE_HEROES = "change-config-house-heroes";
 export const SCENE_CHANGE_CONFIG_ALERT_SHIELD = "change-config-alert-shield";
+export const SCENE_CHANGE_CONFIG_ALERT_MATERIAL =
+   "change-config-ALERT_MATERIAL";
 export const SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD =
    "change-config-MAX_GAS_REPAIR_SHIELD";
 export const SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO =
