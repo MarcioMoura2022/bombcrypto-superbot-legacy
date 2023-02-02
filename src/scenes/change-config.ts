@@ -4,6 +4,7 @@ import { sendMessageWithButtonsTelegram, sortByRarityDesc } from "../lib";
 import {
    SCENE_CHANGE_CONFIG,
    SCENE_CHANGE_CONFIG_HOUSE_HEROES,
+   SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
    SCENE_CHANGE_CONFIG_NUM_HEROES,
    SCENE_CHANGE_CONFIG_PERCENTAGE,
    SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
@@ -34,6 +35,36 @@ const getValue = (ctx: any) => {
    return "";
 };
 
+export const sceneConfigMaxGasRepairShield: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = getValue(ctx);
+         if (mode) {
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(
+               bot.getIdentify(),
+               "MAX_GAS_REPAIR_SHIELD",
+               mode
+            );
+            return ctx.scene.leave();
+         }
+
+         await ctx.replyWithHTML(
+            `Enter the maximum value in matic, example <b>0.004</b>`
+         );
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
 export const sceneConfigTelegramChatId: any = new Scenes.WizardScene(
    SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
    async (ctx) => nextStep(ctx),
@@ -315,6 +346,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                HOUSE_HEROES: SCENE_CHANGE_CONFIG_HOUSE_HEROES,
                TELEGRAM_CHAT_ID: SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
                RESET_SHIELD_AUTO: SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
+               MAX_GAS_REPAIR_SHIELD: SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
             };
 
             if (mode in scenes) {
@@ -337,6 +369,10 @@ export const sceneConfig: any = new Scenes.WizardScene(
                Markup.button.callback("HOUSE_HEROES", "HOUSE_HEROES"),
                Markup.button.callback("TELEGRAM_CHAT_ID", "TELEGRAM_CHAT_ID"),
                Markup.button.callback("RESET_SHIELD_AUTO", "RESET_SHIELD_AUTO"),
+               Markup.button.callback(
+                  "MAX_GAS_REPAIR_SHIELD",
+                  "MAX_GAS_REPAIR_SHIELD"
+               ),
             ],
             1
          );

@@ -18,6 +18,7 @@ import { sceneAddAccount } from "../scenes/add-account";
 import {
    sceneConfig,
    sceneConfigHouseHeroes,
+   sceneConfigMaxGasRepairShield,
    sceneConfigNumHeroes,
    sceneConfigPercentage,
    sceneConfigResetShieldAuto,
@@ -75,6 +76,7 @@ export class Telegram {
             sceneConfigNumHeroes,
             sceneConfigTelegramChatId,
             sceneConfigResetShieldAuto,
+            sceneConfigMaxGasRepairShield,
          ]);
          this.telegraf.use(session());
          this.telegraf.use(stage.middleware());
