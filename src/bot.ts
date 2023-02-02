@@ -1330,7 +1330,7 @@ export class TreasureMapBot {
 
    private handleSquadLoad(payload: ISyncBombermanPayload[]) {
       const heroes = payload.map(parseGetActiveBomberPayload).map(buildHero);
-
+      logger.info(`Sync ${heroes.length} heroes`);
       heroes.map(async (hero) => {
          await this.notification.checkHeroShield(
             hero.id,

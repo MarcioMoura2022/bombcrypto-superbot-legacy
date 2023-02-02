@@ -1,8 +1,9 @@
 import { Markup, Scenes } from "telegraf";
 import { bot } from "..";
-import { sendMessageWithButtonsTelegram } from "../lib";
+import { sendMessageWithButtonsTelegram, sortByRarityDesc } from "../lib";
 import {
    SCENE_CHANGE_CONFIG,
+   SCENE_CHANGE_CONFIG_HOUSE_HEROES,
    SCENE_CHANGE_CONFIG_NUM_HEROES,
    SCENE_CHANGE_CONFIG_PERCENTAGE,
    SCENE_CHANGE_CONFIG_SERVER,
@@ -137,6 +138,87 @@ export const sceneConfigNumHeroes: any = new Scenes.WizardScene(
       }
    }
 );
+export const sceneConfigHouseHeroes: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_HOUSE_HEROES,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = getValue(ctx);
+         const heroes = sortByRarityDesc(bot.squad.activeHeroes);
+         if (mode) {
+            let selected = ctx.wizard.state.heroesSelected;
+
+            if (mode == `submit`) {
+               await ctx.replyWithHTML(
+                  `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+               );
+               await bot.saveConfig(
+                  bot.getIdentify(),
+                  "HOUSE_HEROES",
+                  selected.join(":")
+               );
+               return ctx.scene.leave();
+            }
+            if (mode == `cancel`) {
+               await ctx.replyWithHTML("Canceled");
+               return ctx.scene.leave();
+            }
+
+            const hero = bot.squad.activeHeroes.find((h) => h.id == mode);
+            if (!hero || !selected) {
+               ctx.replyWithHTML(`Hero not found: ${hero}`);
+               await ctx.replyWithHTML("Canceled");
+               return ctx.scene.leave();
+            }
+
+            if (selected.includes(mode)) {
+               selected = selected.filter((id: string) => id != mode);
+            } else {
+               selected.push(mode);
+            }
+
+            ctx.wizard.state.heroesSelected = selected;
+            const button = ctx.wizard.state.button;
+            const buttons = Markup.inlineKeyboard(
+               [
+                  ...bot.telegram.createButtonsHero(heroes, selected),
+                  Markup.button.callback("cancel", "cancel"),
+                  Markup.button.callback("submit", "submit"),
+               ],
+               { columns: 2 }
+            );
+            await bot.telegram.telegraf?.telegram.editMessageReplyMarkup(
+               button.chat.id,
+               button.message_id,
+               button.text,
+               {
+                  inline_keyboard: buttons.reply_markup.inline_keyboard,
+               }
+            );
+            return;
+         }
+         ctx.wizard.state.heroesSelected = bot.params.houseHeroes.split(":");
+         ctx.wizard.state.button = await ctx.replyWithHTML(
+            "Select the heroes",
+            Markup.inlineKeyboard(
+               [
+                  ...bot.telegram.createButtonsHero(
+                     heroes,
+                     ctx.wizard.state.heroesSelected
+                  ),
+                  Markup.button.callback("cancel", "cancel"),
+                  Markup.button.callback("submit", "submit"),
+               ],
+               { columns: 2 }
+            )
+         );
+      } catch (e: any) {
+         console.log(e);
+         await ctx.replyWithHTML("ERROR: \n" + e.message);
+         ctx.scene.leave();
+      }
+   }
+);
 
 export const sceneConfig: any = new Scenes.WizardScene(
    SCENE_CHANGE_CONFIG,
@@ -161,6 +243,9 @@ export const sceneConfig: any = new Scenes.WizardScene(
             if (mode == "NUM_HERO_WORK") {
                await ctx.scene.enter(SCENE_CHANGE_CONFIG_NUM_HEROES);
             }
+            if (mode == "HOUSE_HEROES") {
+               await ctx.scene.enter(SCENE_CHANGE_CONFIG_HOUSE_HEROES);
+            }
 
             return;
          }
@@ -175,6 +260,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                   "MIN_HERO_ENERGY_PERCENTAGE"
                ),
                Markup.button.callback("NUM_HERO_WORK", "NUM_HERO_WORK"),
+               Markup.button.callback("HOUSE_HEROES", "HOUSE_HEROES"),
             ],
             1
          );

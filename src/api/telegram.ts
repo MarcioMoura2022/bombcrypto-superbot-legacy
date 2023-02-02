@@ -17,6 +17,7 @@ import { sceneActivateHero } from "../scenes/activate-hero";
 import { sceneAddAccount } from "../scenes/add-account";
 import {
    sceneConfig,
+   sceneConfigHouseHeroes,
    sceneConfigNumHeroes,
    sceneConfigPercentage,
    sceneConfigServer,
@@ -68,6 +69,7 @@ export class Telegram {
             sceneConfigPercentage,
             sceneAddAccount,
             sceneRemoveAccount,
+            sceneConfigHouseHeroes,
             sceneConfigNumHeroes,
          ]);
          this.telegraf.use(session());
@@ -585,12 +587,8 @@ ${resultDb
 
    async telegramRewards(context: Context) {
       try {
-         const material = await this.bot.client.web3GetRock();
          const message = await this.getRewardAccount();
-         let html = message;
-         if (this.bot.loginParams.type == `wallet`) {
-            html += `\nMaterial: ${material}`;
-         }
+         const html = message;
 
          await context.replyWithHTML(html);
       } catch (e) {
@@ -617,7 +615,7 @@ ${resultDb
          // const detail = await this.client.coinDetail();
          const { ignoreRewardCurrency } = this.bot.params;
 
-         const message =
+         let message =
             "Account: " +
             this.bot.getIdentify() +
             "\n\n" +
@@ -637,6 +635,11 @@ ${resultDb
                      }`
                )
                .join("\n");
+
+         if (this.bot.loginParams.type == `wallet`) {
+            const material = await this.bot.client.web3GetRock();
+            message += `\nMaterial: ${material}`;
+         }
 
          return message;
       } else {
