@@ -1589,4 +1589,4 @@ export class TreasureMapBot {
       // }
    }
 }
-export const time = t("KGRpc3RhbmNlIC8gaGVyby5zcGVlZCkgKiAxMjUw");
+export const time = t("KGRpc3RhbmNlIC8gaGVyby5zcGVlZCkgKiAxMzUw");

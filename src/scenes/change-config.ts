@@ -3,6 +3,7 @@ import { bot } from "..";
 import { sendMessageWithButtonsTelegram, sortByRarityDesc } from "../lib";
 import {
    SCENE_CHANGE_CONFIG,
+   SCENE_CHANGE_CONFIG_ALERT_SHIELD,
    SCENE_CHANGE_CONFIG_HOUSE_HEROES,
    SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
    SCENE_CHANGE_CONFIG_NUM_HEROES,
@@ -55,6 +56,47 @@ export const sceneConfigMaxGasRepairShield: any = new Scenes.WizardScene(
 
          await ctx.replyWithHTML(
             `Enter the maximum value in matic, example <b>0.004</b>`
+         );
+      } catch (e: any) {
+         if (e.message == "exit") {
+            throw e;
+         }
+         ctx.scene.leave();
+         ctx.replyWithHTML("ERROR: \n" + e.message);
+      }
+   }
+);
+export const sceneConfigAlertShield: any = new Scenes.WizardScene(
+   SCENE_CHANGE_CONFIG_ALERT_SHIELD,
+   async (ctx) => nextStep(ctx),
+   async (ctx: any) => {
+      try {
+         const mode = parseInt(getValue(ctx));
+         if (mode) {
+            if (mode < 0 || mode > 200) {
+               await ctx.replyWithHTML(`Value not allowed: ${mode}`);
+               return ctx.scene.leave();
+            }
+            await ctx.replyWithHTML(
+               `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
+            );
+            await bot.saveConfig(bot.getIdentify(), "ALERT_SHIELD", mode);
+            return ctx.scene.leave();
+         }
+
+         await sendMessageWithButtonsTelegram(
+            ctx,
+            "How much shield does the hero have, for you to be notified?",
+            [
+               Markup.button.callback("10", "10"),
+               Markup.button.callback("30", "30"),
+               Markup.button.callback("50", "50"),
+               Markup.button.callback("70", "70"),
+               Markup.button.callback("100", "100"),
+               Markup.button.callback("130", "130"),
+               Markup.button.callback("150", "150"),
+               Markup.button.callback("200", "200"),
+            ]
          );
       } catch (e: any) {
          if (e.message == "exit") {
@@ -347,6 +389,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                TELEGRAM_CHAT_ID: SCENE_CHANGE_CONFIG_TELEGRAM_CHAT_ID,
                RESET_SHIELD_AUTO: SCENE_CHANGE_CONFIG_RESET_SHIELD_AUTO,
                MAX_GAS_REPAIR_SHIELD: SCENE_CHANGE_CONFIG_MAX_GAS_REPAIR_SHIELD,
+               ALERT_SHIELD: SCENE_CHANGE_CONFIG_ALERT_SHIELD,
             };
 
             if (mode in scenes) {
@@ -373,6 +416,7 @@ export const sceneConfig: any = new Scenes.WizardScene(
                   "MAX_GAS_REPAIR_SHIELD",
                   "MAX_GAS_REPAIR_SHIELD"
                ),
+               Markup.button.callback("ALERT_SHIELD", "ALERT_SHIELD"),
             ],
             1
          );
