@@ -472,25 +472,14 @@ export class Client {
          return { server: this.moreParams.server as string, ping: 0 };
       }
 
-      let lastServer = (await this.db.get("lastServer")) || {
+      const lastServer = (await this.db.get("lastServer")) || {
          try: 0,
          server: this.moreParams.server,
       };
 
-      if (lastServer.try >= 5) {
-         const servers = SERVERS.filter((s) => s != lastServer.server);
-         const nextServer = servers[Math.floor(Math.random() * servers.length)];
-         lastServer = {
-            try: 0,
-            server: nextServer,
-         };
-      }
       logger.info(
          `trying on ${lastServer.server} server, try ${lastServer.try}`
       );
-      lastServer.try++;
-      await this.db.set("lastServer", lastServer);
-
       return { server: lastServer.server as string, ping: 0 };
       // return result[0];
    }
@@ -1226,11 +1215,30 @@ export class Client {
       handlers.forEach((handler) => handler(...params));
    }
 
-   private handleConnection(params: IConnectionParams) {
+   private async handleConnection(params: IConnectionParams) {
       if (params.success) {
          this.callHandler(this.handlers.connection);
          resolveUniquePromise(this.controller.connect, undefined);
       } else {
+         if (this.moreParams.tryServers) {
+            let lastServer = (await this.db.get("lastServer")) || {
+               try: 0,
+               server: this.moreParams.server,
+            };
+
+            if (lastServer.try >= 5) {
+               const servers = SERVERS.filter((s) => s != lastServer.server);
+               const nextServer =
+                  servers[Math.floor(Math.random() * servers.length)];
+               lastServer = {
+                  try: 0,
+                  server: nextServer,
+               };
+            }
+            lastServer.try++;
+            await this.db.set("lastServer", lastServer);
+         }
+
          this.callHandler(this.handlers.connectionFailed);
          rejectUniquePromise(
             this.controller.connect,
