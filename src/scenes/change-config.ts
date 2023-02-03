@@ -286,8 +286,8 @@ export const sceneConfigNumHeroes: any = new Scenes.WizardScene(
       try {
          const mode = parseInt(getValue(ctx));
          if (mode) {
-            if (!percentage.includes(mode)) {
-               await ctx.replyWithHTML("Percentage not found: " + mode);
+            if (!heroes.includes(mode)) {
+               await ctx.replyWithHTML("Qty not found: " + mode);
                return ctx.scene.leave();
             }
 
