@@ -31,6 +31,7 @@ async function main() {
          parseBoolean,
          false
       ),
+      tryServers: askAndParseEnv("TRY_SERVERS", parseBoolean, false),
       resetShieldAuto: askAndParseEnv("RESET_SHIELD_AUTO", parseBoolean, false),
       rede: askAndParseEnv("NETWORK", identity, "BSC"),
       version: parseInt(

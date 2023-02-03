@@ -92,6 +92,7 @@ export interface IMoreOptions {
    telegramChatIdCheck?: boolean;
    resetShieldAuto?: boolean;
    ignoreNumHeroWork?: boolean;
+   tryServers?: boolean;
    ignoreShieldHeroHouse?: boolean;
    reportRewards?: number;
    minHeroEnergyPercentage?: number;
@@ -153,6 +154,7 @@ export class TreasureMapBot {
       const {
          forceExit = true,
          minHeroEnergyPercentage = 90,
+         tryServers = false,
          modeAmazon = false,
          houseHeroes = "",
          adventureHeroes = "",
@@ -183,6 +185,7 @@ export class TreasureMapBot {
          forceExit,
          minHeroEnergyPercentage,
          modeAmazon: true,
+         tryServers,
          houseHeroes,
          adventureHeroes,
          modeAdventure,
@@ -210,13 +213,15 @@ export class TreasureMapBot {
       this.loginParams = loginParams;
       loginParams.rede = rede;
       loginParams.version = version;
+      this.db = new Database(this.getIdentify());
 
       this.playing = null;
       this.client = new Client(
          loginParams,
          DEFAULT_TIMEOUT,
          modeAmazon,
-         this.params
+         this.params,
+         this.db
       );
       this.map = new TreasureMap({ blocks: [] });
       this.squad = new Squad({ heroes: [] });
@@ -240,7 +245,6 @@ export class TreasureMapBot {
       this.lastAdventure = 0;
       this.alertShield = alertShield;
 
-      this.db = new Database(this.getIdentify());
       this.notification = new Notification(this.db);
       this.telegram = new Telegram(this);
       this.telegram.init();

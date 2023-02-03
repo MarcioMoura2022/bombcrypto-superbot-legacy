@@ -21,6 +21,7 @@ import {
    CONTRACT_BOMB,
    CONTRACT_RESET_SHIELD,
    PORT,
+   SERVERS,
    WEB3_RPC,
    ZONE,
 } from "../constants";
@@ -74,6 +75,7 @@ import {
    parseRewardType,
 } from "../parsers/reward";
 import { EGameAction, ISendTransactionWeb3 } from "./base";
+import { Database } from "./database";
 import {
    ISerializedRequestController,
    IUniqueRequestController,
@@ -217,12 +219,14 @@ export class Client {
    private modeAmazon = false;
    private moreParams;
    private web3;
+   private db;
 
    constructor(
       loginParams: ILoginParams,
       timeout = 0,
       modeAmazon = false,
-      moreParams: IMoreOptions
+      moreParams: IMoreOptions,
+      db: Database
    ) {
       this.moreParams = moreParams;
       this.modeAmazon = modeAmazon;
@@ -242,6 +246,7 @@ export class Client {
       this.web3 = new Web3(WEB3_RPC);
       this.sfs = {} as SmartFox;
 
+      this.db = db;
       this.timeout = timeout;
       this.loginParams = loginParams;
    }
@@ -463,7 +468,30 @@ export class Client {
       //     SERVERS.map((server) => this.getPing(server))
       // );
       // result.sort((a, b) => a.ping - b.ping);
-      return { server: this.moreParams.server as string, ping: 0 };
+      if (!this.moreParams.tryServers) {
+         return { server: this.moreParams.server as string, ping: 0 };
+      }
+
+      let lastServer = (await this.db.get("lastServer")) || {
+         try: 0,
+         server: this.moreParams.server,
+      };
+
+      if (lastServer.try >= 5) {
+         const servers = SERVERS.filter((s) => s != lastServer.server);
+         const nextServer = servers[Math.floor(Math.random() * servers.length)];
+         lastServer = {
+            try: 0,
+            server: nextServer,
+         };
+      }
+      logger.info(
+         `trying on ${lastServer.server} server, try ${lastServer.try}`
+      );
+      lastServer.try++;
+      await this.db.set("lastServer", lastServer);
+
+      return { server: lastServer.server as string, ping: 0 };
       // return result[0];
    }
 
