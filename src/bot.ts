@@ -92,6 +92,7 @@ export interface IMoreOptions {
    telegramChatIdCheck?: boolean;
    resetShieldAuto?: boolean;
    ignoreNumHeroWork?: boolean;
+   ignoreShieldHeroHouse?: boolean;
    reportRewards?: number;
    minHeroEnergyPercentage?: number;
    houseHeroes?: string;
@@ -160,6 +161,7 @@ export class TreasureMapBot {
          resetShieldAuto = false,
          telegramChatIdCheck = false,
          ignoreNumHeroWork = false,
+         ignoreShieldHeroHouse = false,
          reportRewards = 0,
          ignoreCommands = [],
          workHeroWithShield = 0,
@@ -195,6 +197,7 @@ export class TreasureMapBot {
          telegramChatId,
          telegramKey,
          telegramChatIdCheck,
+         ignoreShieldHeroHouse,
          resetShieldAuto,
          rewardsAllPermission,
          maxGasRepairShield,
@@ -465,11 +468,13 @@ export class TreasureMapBot {
    }
 
    async refreshHeroAtHome() {
+      const { ignoreShieldHeroHouse, modeAmazon } = this.params;
       const homeSelection = this.squad.notWorking
          .filter(
             (hero) =>
-               !this.params.modeAmazon ||
-               (this.params.modeAmazon &&
+               !modeAmazon ||
+               ignoreShieldHeroHouse ||
+               (modeAmazon &&
                   hero.shields &&
                   hero.shields.length &&
                   this.getSumShield(hero))

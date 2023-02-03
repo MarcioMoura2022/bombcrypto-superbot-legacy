@@ -50,6 +50,11 @@ async function main() {
          parseBoolean,
          false
       ),
+      ignoreShieldHeroHouse: askAndParseEnv(
+         "IGNORE_SHIELD_HERO_HOUSE",
+         parseBoolean,
+         false
+      ),
       reportRewards: report,
       server: askAndParseEnv("SERVER", identity, "sea"),
       maxGasRepairShield: askAndParseEnv(
