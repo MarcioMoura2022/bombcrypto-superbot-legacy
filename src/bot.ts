@@ -1362,11 +1362,12 @@ export class TreasureMapBot {
                )?.timestamp;
                //verifica se faz mais que 24 horas da ultima notificação
                if (
-                  !lastDate ||
-                  (lastDate &&
-                     Math.abs(
-                        new Date(lastDate).getTime() - new Date().getTime()
-                     ) / 36e5) > 24
+                  this.alertShield > 0 &&
+                  (!lastDate ||
+                     (lastDate &&
+                        Math.abs(
+                           new Date(lastDate).getTime() - new Date().getTime()
+                        ) / 36e5) > 24)
                ) {
                   await this.alertShieldHero(hero);
                   this.notificationShieldHero.set(hero.id, {
