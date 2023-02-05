@@ -221,6 +221,7 @@ export const sceneConfigServer: any = new Scenes.WizardScene(
             await ctx.replyWithHTML(
                `Account: ${bot.getIdentify()}\n\nConfiguration changed, server will restarted`
             );
+            await bot.db.delete("lastServer");
             await bot.saveConfig(bot.getIdentify(), "SERVER", mode);
             return ctx.scene.leave();
          }
