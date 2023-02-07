@@ -213,7 +213,19 @@ export class TreasureMapBot {
       this.loginParams = loginParams;
       loginParams.rede = rede;
       loginParams.version = version;
-      this.db = new Database(this.getIdentify());
+      try {
+         this.db = new Database(this.getIdentify());
+      } catch (e: any) {
+         const file = path.join(
+            __dirname,
+            "..",
+            `database-${this.getIdentify()}.json`
+         );
+         if (existsSync(file)) {
+            unlinkSync(file);
+         }
+         throw e;
+      }
 
       this.playing = null;
       this.client = new Client(
@@ -1539,7 +1551,6 @@ export class TreasureMapBot {
       await this.pm2SaveFile(config);
 
       const file = path.join(__dirname, "..", `database-${name}.json`);
-      console.log("file", file, existsSync(file));
       if (existsSync(file)) {
          unlinkSync(file);
       }

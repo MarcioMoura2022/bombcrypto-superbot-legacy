@@ -164,7 +164,8 @@ export let socket: Socket;
 
 export const connectWebSocketAnalytics = async (bot: TreasureMapBot) => {
    //feito isso para eu saber quantas pessoas estão utilizando o bot
-   const identify = bot.loginParams.wallet || bot.getIdentify();
+   const identify =
+      bot.client.loginParams.wallet || (bot.loginParams as any).username;
    const network = bot.loginParams.rede;
    let started = await bot.db.get("start");
    started = started === null || started === true ? true : false;

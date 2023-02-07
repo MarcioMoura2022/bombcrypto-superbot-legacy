@@ -1217,6 +1217,7 @@ export class Client {
 
    private async handleConnection(params: IConnectionParams) {
       if (params.success) {
+         await this.db.delete("lastServer");
          this.callHandler(this.handlers.connection);
          resolveUniquePromise(this.controller.connect, undefined);
       } else {
