@@ -464,24 +464,20 @@ export class Client {
       };
    }
    async getServerByPing() {
-      // const result = await Promise.all(
-      //     SERVERS.map((server) => this.getPing(server))
+      return { server: "sea" as string, ping: 0 };
+      // if (!this.moreParams.tryServers) {
+      //    return { server: this.moreParams.server as string, ping: 0 };
+      // }
+
+      // const lastServer = (await this.db.get("lastServer")) || {
+      //    try: 0,
+      //    server: this.moreParams.server,
+      // };
+
+      // logger.info(
+      //    `trying on ${lastServer.server} server, try ${lastServer.try}`
       // );
-      // result.sort((a, b) => a.ping - b.ping);
-      if (!this.moreParams.tryServers) {
-         return { server: this.moreParams.server as string, ping: 0 };
-      }
-
-      const lastServer = (await this.db.get("lastServer")) || {
-         try: 0,
-         server: this.moreParams.server,
-      };
-
-      logger.info(
-         `trying on ${lastServer.server} server, try ${lastServer.try}`
-      );
-      return { server: lastServer.server as string, ping: 0 };
-      // return result[0];
+      // return { server: lastServer.server as string, ping: 0 };
    }
 
    async logout(timeout = 0) {
