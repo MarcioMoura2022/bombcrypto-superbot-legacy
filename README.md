@@ -1,2 +1,1 @@
-i morreu.
-1
+Bot BombCrypto LEGACY By Marcio Moura
