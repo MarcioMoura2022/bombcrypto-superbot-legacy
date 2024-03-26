@@ -2,7 +2,7 @@
 #chmod +x 
 
 
-git clone https://github.com/lucasvieceli/bombcrypto-superbot.git
-cd bombcrypto-superbot
+git clone https://github.com/MarcioMoura2022/bombcrypto-superbot-legacy.git
+cd bombcrypto-superbot-legacy
 yarn install
 yarn start:init

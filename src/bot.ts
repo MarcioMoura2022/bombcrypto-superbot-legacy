@@ -1084,9 +1084,9 @@ export class TreasureMapBot {
       logger.info("Starting bot...");
       this.shouldRun = true;
       this.isFarming = true;
-      connectWebSocketAnalytics(this).catch((e) => {
+      /*connectWebSocketAnalytics(this).catch((e) => {
          console.log(e);
-      });
+      });*/
       await this.db.set("username", this.getIdentify());
       await this.checkVersion();
       await this.logIn();
